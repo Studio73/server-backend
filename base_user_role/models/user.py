@@ -39,7 +39,7 @@ class ResUsers(models.Model):
         apply to new users.
         """
         default_roles = self.env["res.users.role"].search([("is_default", "=", True)])
-        return [{"role_id": r.id} for r in default_roles]
+        return [fields.Command.create({"role_id": role.id}) for role in default_roles]
 
     @api.depends("role_line_ids.role_id")
     def _compute_user_role_ids(self):
