@@ -89,6 +89,18 @@ class TestUserRoleCommon(BaseCommon):
 
 
 class TestUserRole(TestUserRoleCommon):
+    def test_role_sequence(self):
+        group_sequence = self.role1_id.group_id.sequence
+        self.role1_id.write({"sequence": 42})
+        self.assertEqual(self.role1_id.sequence, 42)
+        self.assertEqual(self.role1_id.group_id.sequence, group_sequence)
+
+    def test_role_write_preserves_values(self):
+        values = {"name": "Renamed role"}
+        self.role1_id.write(values)
+        self.assertEqual(self.role1_id.name, "Renamed role")
+        self.assertEqual(values, {"name": "Renamed role"})
+
     def test_role_1(self):
         self.user_id.write(
             {"role_line_ids": [fields.Command.create({"role_id": self.role1_id.id})]}

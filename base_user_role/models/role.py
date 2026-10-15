@@ -85,12 +85,13 @@ class ResUsersRole(models.Model):
 
     def write(self, vals):
         recs = self.sudo() if self._bypass_rules() else self
+        vals = dict(vals)
         # Workaround to solve issue with broken code in odoo that clear the
         # cache during the write: see odoo/addons/base/models/res_users.py#L226
         groups_vals = {}
-        for field in recs.group_id._fields:
-            if field in vals:
-                groups_vals[field] = vals.pop(field)
+        for name, field in recs._fields.items():
+            if field.inherited and name in vals:
+                groups_vals[name] = vals.pop(name)
         if groups_vals:
             recs.group_id.write(groups_vals)
         res = super(ResUsersRole, recs).write(vals)
